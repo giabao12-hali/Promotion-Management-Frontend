@@ -44,8 +44,4 @@ export const AuthService = {
             document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; samesite=strict${secureFlag}`;
         }
     }
-    // login: async (payload: LoginPayload) => {
-    //     const res = await api.post("/api/Auth/login", payload);
-    //     return res.data;
-    // }
 }
