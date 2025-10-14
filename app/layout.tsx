@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/auth/AuthContext";
 import { Toaster } from "react-hot-toast";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +33,14 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AuthProvider>
-          {children}
-          <Toaster />
+          <SidebarProvider>
+            <AppSidebar />
+            <main>
+              <SidebarTrigger/>
+              {children}
+            </main>
+            <Toaster />
+          </SidebarProvider>
         </AuthProvider>
       </body>
     </html>
