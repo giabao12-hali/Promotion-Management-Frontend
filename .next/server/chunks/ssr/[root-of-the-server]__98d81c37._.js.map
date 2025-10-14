@@ -1,1 +1,0 @@
-{"version":3,"sources":["turbopack:///[project]/app/dashboard/page.tsx"],"sourcesContent":["import React from 'react'\r\n\r\nexport default function Page() {\r\n    return (\r\n        <div>Dashboard Page</div>\r\n    )\r\n}\r\n"],"names":[],"mappings":"kRAEe,SAAS,IACpB,MACI,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,UAAI,kBAEb"}
