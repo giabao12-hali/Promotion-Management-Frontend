@@ -60,11 +60,11 @@ const data = {
       items: [
         {
           title: "Sản phẩm",
-          url: "#",
+          url: "/dashboard/products",
         },
         {
           title: "Mã khuyến mãi",
-          url: "#",
+          url: "/dashboard/coupons",
         },
       ],
     },
