@@ -15,8 +15,8 @@ export const useLogin = () => {
         onSuccess: async (data) => {
             toast.dismiss();
 
-            // lưu token
-            AuthService.setToken(data.token);
+            // lưu token và thông tin user
+            AuthService.setToken(data.token, data.fullName, data.email);
             toast.success("Đăng nhập thành công!");
 
             // redirect url

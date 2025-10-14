@@ -2,11 +2,14 @@
 
 import { AuthService } from "@/services/auth/auth.service";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { useIsClient } from "@/hooks/use-local-storage";
 
 interface AuthContextType {
     isAuthenticated: boolean;
     token: string | null;
-    login: (token: string) => void;
+    fullName: string | null;
+    email: string | null;
+    login: (token: string, fullName: string, email: string) => void;
     logout: () => void;
     isLoading: boolean;
 }
@@ -21,28 +24,41 @@ export function AuthProvider(
     }
 ) {
     const [token, setToken] = useState<string | null>(null);
+    const [fullName, setFullName] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const isClient = useIsClient();
 
     useEffect(() => {
-        const storedToken = AuthService.getToken();
-        setToken(storedToken);
+        if (isClient) {
+            const userInfo = AuthService.getUserInfo();
+            setToken(userInfo.token);
+            setFullName(userInfo.fullName);
+            setEmail(userInfo.email);
+        }
         setIsLoading(false);
-    }, [])
+    }, [isClient])
 
-    const login = (newToken: string) => {
-        AuthService.setToken(newToken);
+    const login = (newToken: string, newFullName: string, newEmail: string) => {
+        AuthService.setToken(newToken, newFullName, newEmail);
         setToken(newToken);
+        setFullName(newFullName);
+        setEmail(newEmail);
     };
 
     const logout = () => {
         AuthService.logout();
         setToken(null);
+        setFullName(null);
+        setEmail(null);
     }
 
     return (
         <AuthContext.Provider value={{
             isAuthenticated: !!token,
             token,
+            fullName,
+            email,
             login,
             logout,
             isLoading
