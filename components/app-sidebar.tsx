@@ -62,6 +62,10 @@ const data = {
           title: "Mã khuyến mãi",
           url: "/dashboard/coupons",
         },
+        {
+          title: "Danh mục sản phẩm",
+          url: "/dashboard/categories",
+        }
       ],
     },
     {

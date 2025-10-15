@@ -19,12 +19,10 @@ export const AuthService = {
             console.log('Login request payload:', payload);
             const res = await api.post("/api/Auth/login", payload);
             console.log('Login response data:', res.data);
-            
             // Kiểm tra xem API có trả về đủ thông tin không
             if (!res.data.token) {
                 throw new Error('Token không được trả về từ API');
             }
-            
             return res.data;
         } catch (error: unknown) {
             console.error('Login error details:', error);

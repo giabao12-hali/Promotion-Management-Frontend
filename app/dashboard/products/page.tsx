@@ -1,5 +1,6 @@
 'use client'
 
+import ProductHomeComponent from '@/components/products'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
@@ -30,6 +31,9 @@ export default function page() {
                     </Breadcrumb>
                 </div>
             </header>
+            <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
+                <ProductHomeComponent/>
+            </div>
         </SidebarInset>
     )
 }
