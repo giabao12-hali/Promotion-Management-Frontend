@@ -1,52 +1,76 @@
 'use client'
 
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@/components/ui/plus";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { CategoriesSelect } from "./selectCategories";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { AutosizeTextarea } from "@/components/ui/textarea-autosize";
-import { useCategories } from "@/hooks/categories/useCategories";
-import { useProduct } from "@/hooks/products/useProduct";
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { PlusIcon } from '@/components/ui/plus'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import z from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { AutosizeTextarea } from '@/components/ui/textarea-autosize'
+import { Switch } from '@/components/ui/switch'
+import { usePromotion } from '@/hooks/promotions/usePromotion'
+import { DateRangePicker } from '@/components/ui/date-range-picker'
 
-const productForm = z.object({
-    name: z.string().min(1, "Vui lòng nhập tên sản phẩm"),
-    code: z.string().min(1, "Vui lòng nhập mã sản phẩm"),
+const promotionForm = z.object({
+    name: z.string().min(1, "Vui lòng nhập tên mã khuyến mãi"),
+    code: z.string().min(1, "Vui lòng nhập mã khuyến mãi"),
     description: z.string().optional(),
-    price: z.number().min(0, "Giá tiền không được âm"),
-    categoryId: z.string().min(1, "Vui lòng chọn danh mục sản phẩm"),
+    dateRange: z.object({
+        from: z.date(),
+        to: z.date().optional(),
+    }).refine((data) => {
+        if (!data.from) {
+            return false;
+        }
+        if (data.to && data.from && data.to < data.from) {
+            return false;
+        }
+        return true;
+    }, {
+        message: "Vui lòng chọn ngày hợp lệ và ngày kết thúc phải sau ngày bắt đầu",
+        path: ["dateRange"]
+    }),
+    discountPercentage: z.number().min(0, "Phần trăm giảm giá không được âm").max(100, "Phần trăm giảm giá không được vượt quá 100"),
     isActive: z.boolean().optional(),
-});
+})
 
-export function AddProductButton() {
-    const { data: categoryResponse } = useCategories.useGetAllCategories();
-    const categories = categoryResponse || [];
+type PromotionFormData = z.infer<typeof promotionForm>
 
-    const form = useForm<z.infer<typeof productForm>>({
-        resolver: zodResolver(productForm),
+export default function AddPromotionButton() {
+    const today = React.useMemo(() => {
+        const date = new Date();
+        date.setHours(0, 0, 0, 0);
+        return date;
+    }, []);
+
+    const form = useForm<PromotionFormData>({
+        resolver: zodResolver(promotionForm),
         defaultValues: {
             name: "",
             code: "",
             description: "",
-            price: 0,
-            categoryId: "",
+            dateRange: {
+                from: today,
+                to: undefined,
+            },
+            discountPercentage: 0,
             isActive: false,
         }
-    });
+    })
 
-    const createProduct = useProduct.useCreateProduct();
+    const createPromotion = usePromotion.useCreatePromotion();
 
-    function onSubmit(values: z.infer<typeof productForm>) {
-        console.log("Form values:", values);
-        createProduct.mutate({
+    function onSubmit(values: PromotionFormData) {
+        createPromotion.mutate({
             ...values,
             description: values.description || "",
-            isActive: values.isActive || false
+            isActive: values.isActive || false,
+            discountPercent: values.discountPercentage,
+            startDate: values.dateRange.from.toISOString(),
+            endDate: values.dateRange.to ? values.dateRange.to.toISOString() : values.dateRange.from.toISOString()
         }, {
             onSuccess: () => {
                 form.reset();
@@ -59,31 +83,31 @@ export function AddProductButton() {
             <DialogTrigger asChild>
                 <Button size={'sm'} className="rounded-xl">
                     <PlusIcon />
-                    Thêm sản phẩm
+                    Thêm mã khuyến mãi
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        Thêm mới sản phẩm
+                        Thêm mới mã khuyến mãi
                     </DialogTitle>
                     <DialogDescription>
-                        Vui lòng điền đầy đủ thông tin để thêm sản phẩm mới.
+                        Vui lòng điền đầy đủ thông tin để thêm mã khuyến mãi.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-4'>
                         <FormField
                             control={form.control}
-                            name="name"
+                            name='name'
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Tên sản phẩm<span className="text-red-500">(*)</span>
+                                        Tên mã khuyến mãi<span className='text-red-500'>(*)</span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Nhập tên sản phẩm"
+                                            placeholder='Nhập tên mã khuyến mãi'
                                             {...field}
                                             required
                                         />
@@ -94,15 +118,15 @@ export function AddProductButton() {
                         />
                         <FormField
                             control={form.control}
-                            name="code"
+                            name='code'
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Mã sản phẩm<span className="text-red-500">(*)</span>
+                                        Mã khuyến mãi<span className='text-red-500'>(*)</span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Nhập mã sản phẩm"
+                                            placeholder='Nhập mã khuyến mãi'
                                             {...field}
                                             required
                                         />
@@ -117,11 +141,11 @@ export function AddProductButton() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Mô tả sản phẩm
+                                        Mô tả mã khuyến mãi
                                     </FormLabel>
                                     <FormControl>
                                         <AutosizeTextarea
-                                            placeholder="Nhập mô tả sản phẩm"
+                                            placeholder="Nhập mô tả mã khuyến mãi"
                                             maxHeight={250}
                                             {...field}
                                         />
@@ -132,15 +156,34 @@ export function AddProductButton() {
                         />
                         <FormField
                             control={form.control}
-                            name="price"
+                            name="dateRange"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Giá tiền
+                                        Thời gian khuyến mãi<span className="text-red-500">(*)</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <DateRangePicker
+                                            date={field.value}
+                                            onDateChange={field.onChange}
+                                            minDate={today}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="discountPercentage"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Phần trăm giảm giá (%)<span className="text-red-500">(*)</span>
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Nhập giá tiền"
+                                            placeholder="Nhập phần trăm giảm giá"
                                             type="number"
                                             {...field}
                                             required
@@ -153,30 +196,11 @@ export function AddProductButton() {
                         />
                         <FormField
                             control={form.control}
-                            name="categoryId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Danh mục sản phẩm<span className="text-red-500">(*)</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <CategoriesSelect
-                                            data={categories}
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
                             name="isActive"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Sản phẩm khả dụng?
+                                        Hoạt động?
                                     </FormLabel>
                                     <FormControl>
                                         <Switch
@@ -191,7 +215,7 @@ export function AddProductButton() {
                             <DialogClose asChild>
                                 <Button variant={'outline'}>Hủy</Button>
                             </DialogClose>
-                            <Button type="submit">Thêm sản phẩm</Button>
+                            <Button type="submit">Thêm mã khuyến mãi</Button>
                         </DialogFooter>
                     </form>
                 </Form>
