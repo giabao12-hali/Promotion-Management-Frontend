@@ -18,3 +18,13 @@ export interface CreateUpdatePromotionDTO {
     endDate: string;
     isActive: boolean;
 }
+
+export interface ApplyPromotionDTO {
+    promotionCode: string;
+    productId: string;
+}
+
+export interface AddPromotionToProductDTO {
+    promotionId: string;
+    productIds: string[]
+}

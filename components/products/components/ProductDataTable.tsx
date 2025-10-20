@@ -70,7 +70,7 @@ const ProductActions = ({ product }: { product: IProduct }) => {
                             Xem chi tiết
                         </DropdownMenuItem>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className='md:max-w-3xl'>
                         <DetailProductDialog product={product} />
                     </DialogContent>
                 </Dialog>
@@ -147,6 +147,37 @@ export const columns: ColumnDef<IProduct>[] = [
             }).format(price)
 
             return <div className="font-medium">{formatted}</div>
+        },
+    },
+    {
+        accessorKey: 'finalPrice',
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                >
+                    Giá sau giảm
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const price = parseFloat(row.getValue('finalPrice'))
+            const formatted = new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+            }).format(price)
+
+            return <div className="font-medium">{formatted}</div>
+        },
+    },
+    {
+        accessorKey: 'appliedPromotionCode',
+        header: 'Mã khuyến mãi',
+        cell: ({ row }) => {
+            const code = row.getValue('appliedPromotionCode') as string
+            return <div>{code || 'Không có'}</div>
         },
     },
     {

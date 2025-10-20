@@ -5,6 +5,7 @@ import {
   AudioWaveform,
   BookOpen,
   Command,
+  FileSliders,
   GalleryVerticalEnd,
   Home,
   Map,
@@ -103,6 +104,11 @@ const data = {
       url: "#",
       icon: Map,
     },
+    {
+      name: "Bản tin hệ thống",
+      url: "#",
+      icon: FileSliders,
+    }
   ],
 }
 

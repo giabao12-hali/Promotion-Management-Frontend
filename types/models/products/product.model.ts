@@ -6,6 +6,8 @@ export interface IProduct {
     code: string;
     description: string;
     price: number;
+    finalPrice: number;
+    appliedPromotionCode: string;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;

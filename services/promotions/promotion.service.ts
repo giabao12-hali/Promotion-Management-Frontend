@@ -40,5 +40,16 @@ export const PromotionService = {
         } catch (error: unknown) {
             throw error;
         }
+    },
+    addPromotionToProducts: async (promotionId: string, productIds: string[]) => {
+        try {
+            const res = await api.post(`/api/Promotion/add-products`, {
+                promotionId,
+                productIds
+            });
+            return res.data;
+        } catch (error: unknown) {
+            throw error;
+        }
     }
 }

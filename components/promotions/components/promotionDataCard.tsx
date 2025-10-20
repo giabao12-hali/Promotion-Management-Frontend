@@ -1,6 +1,5 @@
 'use client'
 
-import DetailProductDialog from '@/components/products/components/detailProductDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { CopyIcon } from '@/components/ui/copy'
