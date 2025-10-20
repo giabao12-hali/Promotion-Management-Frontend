@@ -1,5 +1,6 @@
 'use client';
 
+import SearchInputCmdk from '@/components/common/searchInputCmdk';
 import PromotionHomeComponent from '@/components/promotions';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
@@ -9,7 +10,7 @@ import React from 'react'
 export default function Page() {
     return (
         <SidebarInset>
-            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 justify-between">
                 <div className="flex items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
                     <Separator
@@ -30,9 +31,12 @@ export default function Page() {
                         </BreadcrumbList>
                     </Breadcrumb>
                 </div>
+                <div className="mr-6">
+                    <SearchInputCmdk />
+                </div>
             </header>
             <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-                <PromotionHomeComponent/>
+                <PromotionHomeComponent />
             </div>
         </SidebarInset>
     )
