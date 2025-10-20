@@ -32,7 +32,7 @@ export default function PromotionSliders(
                                 {promotion.code} - {promotion.name}
                             </Badge>
                         </DialogTrigger>
-                        <DialogContent className='max-w-3xl'>
+                        <DialogContent className='md:max-w-3xl'>
                             <DetailPromotionApplyDialog
                                 promotion={promotion}
                                 product={products}

@@ -11,8 +11,8 @@ import { Switch } from "@/components/ui/switch";
 import { CategoriesSelect } from "./selectCategories";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AutosizeTextarea } from "@/components/ui/textarea-autosize";
-import { useCategories } from "@/hooks/categories/useCategories";
 import { useProduct } from "@/hooks/products/useProduct";
+import { Category } from "@/types/models/categories/category.model";
 
 const productForm = z.object({
     name: z.string().min(1, "Vui lòng nhập tên sản phẩm"),
@@ -23,9 +23,11 @@ const productForm = z.object({
     isActive: z.boolean().optional(),
 });
 
-export function AddProductButton() {
-    const { data: categoryResponse } = useCategories.useGetAllCategories();
-    const categories = categoryResponse || [];
+interface AddProductButtonProps {
+    categories: Category[]
+}
+
+export function AddProductButton({ categories }: AddProductButtonProps) {
 
     const form = useForm<z.infer<typeof productForm>>({
         resolver: zodResolver(productForm),

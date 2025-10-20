@@ -6,13 +6,16 @@ import { useProduct } from "@/hooks/products/useProduct";
 import ProductDataTable from "./components/ProductDataTable";
 import { usePromotion } from "@/hooks/promotions/usePromotion";
 import PromotionSliders from "../promotions/components/promotionSlider";
+import { useCategories } from "@/hooks/categories/useCategories";
 
 
 export default function ProductHomeComponent() {
     const { data: productsResponse, isLoading, error } = useProduct.useGetAllProducts();
-    const {data: promotionsResponse } = usePromotion.useGetAllPromotions();
+    const { data: promotionsResponse } = usePromotion.useGetAllPromotions();
+    const { data: categoriesResponse } = useCategories.useGetAllCategories();
     const products = productsResponse || [];
     const promotions = promotionsResponse || [];
+    const categories = categoriesResponse || [];
 
     if (isLoading) {
         return (
@@ -34,14 +37,16 @@ export default function ProductHomeComponent() {
         <section className="p-4 w-full overflow-hidden">
             <div id="header" className="flex items-center justify-between">
                 <h1 className="text-xl font-bold">Danh sách sản phẩm</h1>
-                <AddProductButton />
+                <AddProductButton
+                    categories={categories}
+                />
             </div>
             <div id="announcement-promotions">
-                <PromotionSliders data={promotions} products={products}/>
+                <PromotionSliders data={promotions} products={products} />
             </div>
             <main id="body">
                 <div className="mt-4">
-                    <ProductDataTable data={products} />
+                    <ProductDataTable data={products} promotions={promotions} category={categories}/>
                 </div>
             </main>
         </section>

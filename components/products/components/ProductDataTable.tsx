@@ -36,13 +36,22 @@ import { IProduct } from '@/types/models/products/product.model'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import toast from 'react-hot-toast'
 import DetailProductDialog from './detailProductDialog'
+import DeleteProductDialog from './deleteProductDialog'
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import UpdateProductDialog from './updateProductDialog'
+import { IPromotion } from '@/types/models/promotions/promotion.model'
+import { Category } from '@/types/models/categories/category.model'
 
 interface ProductDataTableProps {
     data: IProduct[]
+    promotions: IPromotion[];
+    category: Category[]
 }
 
-const ProductActions = ({ product }: { product: IProduct }) => {
-    const [open, setOpen] = useState(false)
+const ProductActions = ({ product, promotions, categories }: { product: IProduct, promotions: IPromotion[], categories: Category[] }) => {
+    const [open, setOpen] = useState(false);
+    const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     return (
         <DropdownMenu>
@@ -71,23 +80,45 @@ const ProductActions = ({ product }: { product: IProduct }) => {
                         </DropdownMenuItem>
                     </DialogTrigger>
                     <DialogContent className='md:max-w-3xl'>
-                        <DetailProductDialog product={product} />
+                        <DetailProductDialog
+                            product={product}
+                        />
                     </DialogContent>
                 </Dialog>
-                <DropdownMenuItem>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Chỉnh sửa
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Xóa
-                </DropdownMenuItem>
+                <Dialog open={openUpdateDialog} onOpenChange={setOpenUpdateDialog}>
+                    <DialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Chỉnh sửa
+                        </DropdownMenuItem>
+                    </DialogTrigger>
+                    <DialogContent className='md:max-w-3xl'>
+                        <UpdateProductDialog
+                            product={product}
+                            promotions={promotions}
+                            categories={categories}
+                        />
+                    </DialogContent>
+                </Dialog>
+                <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+                    <AlertDialogTrigger asChild>
+                        <DropdownMenuItem className="text-red-600" onSelect={(e) => e.preventDefault()}>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Xóa
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <DeleteProductDialog
+                            product={product}
+                        />
+                    </AlertDialogContent>
+                </AlertDialog>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 }
 
-export const columns: ColumnDef<IProduct>[] = [
+export const columns = (promotions: IPromotion[], categories: Category[]): ColumnDef<IProduct>[] => [
     {
         accessorKey: 'code',
         header: ({ column }) => {
@@ -205,19 +236,18 @@ export const columns: ColumnDef<IProduct>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const product = row.original
-            return <ProductActions product={product} />
+            return <ProductActions product={product} promotions={promotions} categories={categories} />
         },
     },
 ]
 
-export default function ProductDataTable({ data }: ProductDataTableProps) {
+export default function ProductDataTable({ data, promotions, category }: ProductDataTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
     const table = useReactTable({
         data,
-        columns,
-        onSortingChange: setSorting,
+        columns: columns(promotions, category),
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),

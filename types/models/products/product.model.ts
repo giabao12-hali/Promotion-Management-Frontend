@@ -1,4 +1,5 @@
 import { Category } from "../categories/category.model";
+import { IPromotion } from "../promotions/promotion.model";
 
 export interface IProduct {
     id: string;
@@ -12,6 +13,8 @@ export interface IProduct {
     createdAt: string;
     updatedAt: string;
     category: Category;
+    promotion: IPromotion;
+    appliedPromotionCodes: string[];
 }
 
 export interface CreateUpdateProductDTO {
@@ -21,4 +24,5 @@ export interface CreateUpdateProductDTO {
     price: number;
     isActive: boolean;
     categoryId: string;
+    promotionIds?: string[];
 }
